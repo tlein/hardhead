@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use sdl2::rect::{Rect};
 use sdl2::event::{Event};
 use sdl2::keyboard::{Keycode};
+use core::timer::{Timer};
 
 pub fn game_loop() {
     let sdl_context = sdl2::init().unwrap();
@@ -29,9 +30,9 @@ pub fn game_loop() {
     let mut x_coord = 0.0;
     let mut y_coord = 0.0;
 
-    let hello = sdl2::surface::Surface::load_bmp("hello.bmp");
-
+    let mut game_timer = Timer::new();
     loop {
+        let delta = game_timer.get_delta();
         for event in events.poll_iter() {
             match event {
                 Event::Quit {..} | Event::KeyDown {keycode: Some(Keycode::Escape), ..} => {
@@ -47,17 +48,19 @@ pub fn game_loop() {
             keys.entry(key).or_insert(true);
         }
 
+        let amount_to_move = 100.0 * delta;
+
         if keys.contains_key(&Keycode::Left) {
-            x_coord -= 0.1;
+            x_coord -= amount_to_move;
         }
         if keys.contains_key(&Keycode::Right) {
-            x_coord += 0.1;
+            x_coord += amount_to_move;
         }
         if keys.contains_key(&Keycode::Up) {
-            y_coord -= 0.1;
+            y_coord -= amount_to_move;
         }
         if keys.contains_key(&Keycode::Down) {
-            y_coord += 0.1;
+            y_coord += amount_to_move;
         }
         rect.x = x_coord as i32;
         rect.y = y_coord as i32;
